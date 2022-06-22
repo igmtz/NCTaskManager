@@ -1,4 +1,4 @@
-package mx.tc.j2se.tasks.Main.Practice1.main;
+package mx.tc.j2se.tasks;
 
 public interface Task {
     String getTitle();
