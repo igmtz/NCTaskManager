@@ -9,5 +9,5 @@ public interface ArrayTaskList {
 
     Task getTask(int index);
 
-    ArrayTaskList[] incoming(int from, int to);
+    ArrayTaskList incoming(int from, int to);
 }

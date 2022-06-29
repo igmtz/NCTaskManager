@@ -1,6 +1,10 @@
 package mx.tc.j2se.tasks;
 
 /**
+ * ArrayTaskListImpl class represents the creation of the
+ * array tasks list with all its methods for the manipulation
+ * of the tasks objects.
+ *
  * @version 1.10 28 June 2022
  * @author Gonzalo Martínez
  */
@@ -96,37 +100,25 @@ public class ArrayTaskListImpl implements ArrayTaskList {
      * @param to   is the end of the interval
      * @return the list of tasks
      */
-
     @Override
-    public ArrayTaskList[] incoming(int from, int to) {
-        ArrayTaskList[] onRange = new ArrayTaskList[0];
+    public ArrayTaskList incoming(int from, int to) {
+        ArrayTaskList tasksOnRange = new ArrayTaskListImpl();
 
-        for(Task i: this.tasks){
-            int i1 = onRange.length + 1;
-            if (i.isRepeated() && i.isActive()){
+        for (Task i : this.tasks) {
+            if (i.isRepeated() && i.isActive()) {
                 int add = i.getStartTime();
-                while(add < from) {
+                while (add < from) {
                     add += i.getRepeatInterval();
                 }
-                if (add <= to && add <= i.getEndTime()) {
-
-                    ArrayTaskList[] tasksAdded = new ArrayTaskList[i1];
-                    System.arraycopy(onRange, 0, tasksAdded, 0, onRange.length);
-                    tasksAdded[tasksAdded.length-1] = (ArrayTaskList) i;
-
-                    onRange = tasksAdded;
+                if (add < to && add < i.getEndTime()) {
+                    tasksOnRange.add(i);
                 }
 
-            } else if(!i.isRepeated() && i.isActive() && i.getTime() >= from && i.getTime() <= to) {
-                ArrayTaskList[] tasksAdded = new ArrayTaskList[i1];
-                System.arraycopy(onRange, 0, tasksAdded, 0, onRange.length);
-                tasksAdded[tasksAdded.length-1] = (ArrayTaskList) i;
-
-                onRange = tasksAdded;
+            } else if (!i.isRepeated() && i.isActive() && i.getTime() >= from && i.getTime() <= to) {
+                tasksOnRange.add(i);
             }
         }
-        return onRange;
+        return tasksOnRange;
     }
-
 
 }
