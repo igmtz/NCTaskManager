@@ -33,6 +33,9 @@ public class TaskImpl implements Task {
      * @param time execution time
      */
     public TaskImpl(String title, int time) {
+        if( time < 0 ){
+            throw new IllegalArgumentException("Time must be positive");
+        }
         this.title = title;
         this.time = time;
         this.isActive = false;
@@ -50,6 +53,12 @@ public class TaskImpl implements Task {
      * @param interval interval time
      */
     public TaskImpl(String title, int start, int end, int interval){
+        if( start > end ){
+            throw new IllegalArgumentException("The start value must be less than end");
+        }
+        if (interval <= 0){
+            throw new IllegalArgumentException("The interval must be positive and more than zero");
+        }
         this.title = title;
         this.start = start;
         this.end = end;
@@ -75,6 +84,9 @@ public class TaskImpl implements Task {
      */
     @Override
     public void setTime(int time) {
+        if(time < 0 ){
+            throw new IllegalArgumentException("Time value cannot be negative");
+        }
         if(!this.isRepeated){
             this.time = time;
         } else {
@@ -172,6 +184,13 @@ public class TaskImpl implements Task {
      */
     @Override
     public void setTime(int start, int end, int interval) {
+        if( start > end ){
+            throw new IllegalArgumentException("The start value must be less than end");
+        }
+        if (interval <= 0){
+            throw new IllegalArgumentException("The interval must be positive and more than zero");
+        }
+
         if(this.isRepeated){
             this.start = start;
         } else {
