@@ -32,10 +32,11 @@ public class LinkedTaskListImpl implements LinkedTaskList {
      *add is a method that adds a specific task to the tasks list.
      * The same task can be added to the list several times.
      * @param task is the task to be added
+     * @throws IllegalArgumentException when the task added is null
      */
 
     @Override
-    public void add(Task task) throws IllegalArgumentException{
+    public void add(Task task) {
         if( task == null ){
             throw new IllegalArgumentException("The task cannot be null");
         }
@@ -55,14 +56,20 @@ public class LinkedTaskListImpl implements LinkedTaskList {
      * If the list contains the same task several times, any of them is removed.
      * @param task is the task to be deleted
      * @return a boolean value which indicates if the task is in the list.
+     * @throws NullPointerException when the list is empty
+     * @throws IllegalArgumentException when the task parameter is null
      */
     @Override
-    public boolean remove(Task task) {
+    public boolean remove(Task task) throws NullPointerException{
+        if (task == null){
+            throw new IllegalArgumentException("The task cannot be null");
+        }
+
         int count = 0;
         Node countNode = head;
+
         Node current = head;
         Node prev = null;
-
 
         while (countNode != null){
             if (countNode.task == task){
@@ -73,25 +80,23 @@ public class LinkedTaskListImpl implements LinkedTaskList {
         System.out.println(count);
 
         if(head == null){
-            return  false;
-        } else {
-            if(count==1){
-
+            throw new NullPointerException("The linked list you are trying to access is empty");
+        } else if (count == 1) {
             if (task == head.task && current.next != null){
                 head = current.next;
-                return true;
             } else {
-            while (current.next != null && current.task != task){
-                prev = current;
-                current = current.next;
-            }
+                while (current.next != null && current.task != task){
+                    prev = current;
+                    current = current.next;
+                }
                 if (prev != null) {
                     prev.next = current.next;
                 }
             }
-            }
-            return true;
+        } else if (count == 0){
+            return  false;
         }
+        return true;
     }
 
     /**
@@ -119,27 +124,27 @@ public class LinkedTaskListImpl implements LinkedTaskList {
      * position in the list.
      * @param index is the specified index of the required task to obtain
      * @return the task in the specified index
+     * @throws IndexOutOfBoundsException when the index is
+     * negative or the index is out of range
+     * @throws IllegalArgumentException when the list is empty
      */
     @Override
-    public Task getTask(int index) throws NullPointerException, IndexOutOfBoundsException {
-        if (index < 0){
-            throw  new IndexOutOfBoundsException("The index must be positive");
-        }
-
-        int count = 0;
+    public Task getTask(int index) throws IndexOutOfBoundsException{
         if (head == null) {
-            return null;
+            throw new IllegalArgumentException("The linked list you are trying to access is empty");
+        } else if (index < 0) {
+            throw new IndexOutOfBoundsException("The index must be positive");
         } else {
+            int count = 0;
             Node current = head;
-
                 while (count != index) {
-                    current = current.next;
-                    if(current==null){
-                        throw new NullPointerException("node");
+                    if(current.next == null){
+                        throw new IndexOutOfBoundsException("The node you are trying to access is not in list");
+                    } else {
+                        current = current.next;
+                        count++;
                     }
-                    count++;
                 }
-
             return current.task;
         }
     }
@@ -147,29 +152,33 @@ public class LinkedTaskListImpl implements LinkedTaskList {
     /**
      * It is a method that allows to obtain
      * the active tasks to be executed in a certain time range.
-     * The from time must be less than to.
      *
      * @param from is the start of the interval
      * @param to   is the end of the interval
      * @return the list of tasks
+     * @throws IllegalArgumentException when the from value is greater
+     *                                  than to or the input is negative.
      */
     @Override
-    public LinkedTaskList incoming(int from, int to) throws IllegalArgumentException{
+    public LinkedTaskList incoming(int from, int to) {
         if(from > to ){
             throw new IllegalArgumentException("The from value must be less than to");
+        } else if (from < 0){
+            throw new IllegalArgumentException("The input values cannot be negative");
         }
 
         LinkedTaskList taskOnRange = new LinkedTaskListImpl();
 
         Node current = head;
-        while (current.next != null){
+
+        while (current != null){
             if (current.task.isRepeated() && current.task.isActive()){
                 int add = current.task.getStartTime();
                 while (add < from){
                     add += current.task.getRepeatInterval();
                 }
                 if (add < to && add < current.task.getEndTime()){
-                    taskOnRange.add((current.task));
+                    taskOnRange.add(current.task);
                 }
             } else if (!current.task.isRepeated() && current.task.isActive() && current.task.getTime() >= from && current.task.getTime() <= to) {
                 taskOnRange.add(current.task);

@@ -30,6 +30,8 @@ class LinkedTaskListImplTest {
         assertEquals(5, tasks.size());
 
         tasks.add(task);
+        task = null;
+        tasks.add(null);
         assertEquals(6, tasks.size());
     }
 
@@ -48,17 +50,17 @@ class LinkedTaskListImplTest {
 //        tasks.add(task2);
         tasks.add(task3);
         tasks.add(task4);
-        tasks.add(task5);
-        tasks.add(task5);
+//        tasks.add(task5);
+//        tasks.add(task5);
 
 //        tasks.remove(task3);
+//        tasks.remove(task3);
+//        tasks.remove(task2);
         tasks.remove(task3);
-        tasks.remove(task2);
-        tasks.remove(task);
-        tasks.remove(task5);
+//        tasks.remove(task5);
 
-        assertEquals(5, tasks.size());
-//        assertTrue(tasks.remove(task5));
+        assertEquals(4, tasks.size());
+        assertTrue(tasks.remove(task2));
     }
 
     @Test
@@ -70,12 +72,12 @@ class LinkedTaskListImplTest {
         TaskImpl task5 = new TaskImpl("Test5", 100);
 
         LinkedTaskListImpl taskList = new LinkedTaskListImpl();
-        taskList.add(task);
-        taskList.add(task3);
-        taskList.add(task4);
-        taskList.add(task5);
+//        taskList.add(task);
+//        taskList.add(task3);
+//        taskList.add(task4);
+//        taskList.add(task5);
 //        taskList.remove(task5);
-        assertEquals(4, taskList.size());
+        assertEquals(0, taskList.size());
     }
 
     @Test
@@ -89,10 +91,10 @@ class LinkedTaskListImplTest {
         LinkedTaskListImpl taskList = new LinkedTaskListImpl();
         taskList.add(task);
         taskList.add(task3);
-        taskList.add(task4);
-        taskList.add(task5);
+//        taskList.add(task4);
+//        taskList.add(task5);
 
-        assertEquals(task5, taskList.getTask(8));
+        assertEquals(task3, taskList.getTask(1));
     }
 
     @Test
@@ -115,7 +117,7 @@ class LinkedTaskListImplTest {
         taskList.add(task);
         taskList.add(task2);
         taskList.add(task3);
-//        taskList.add(task4);
+        taskList.add(task4);
         taskList.add(task4);
         taskList.add(task5);
 
