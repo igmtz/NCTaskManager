@@ -53,7 +53,7 @@ class ArrayTaskListImplTest {
 //        tasks.remove(task3);
         tasks.remove(task4);
         tasks.remove(task2);
-        tasks.remove(task);
+//        tasks.remove(task);
 //        tasks.remove(task5);
 
         assertEquals(4, tasks.size());
@@ -93,7 +93,7 @@ class ArrayTaskListImplTest {
         taskList.add(task4);
         taskList.add(task5);
 
-        assertEquals(task5, taskList.getTask(3));
+        assertEquals(task5, taskList.getTask(8));
     }
 
     @Test

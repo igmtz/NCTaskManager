@@ -26,9 +26,13 @@ public class ArrayTaskListImpl implements ArrayTaskList {
      *add is a method that adds a specific task to the tasks list.
      * The same task can be added to the list several times.
      * @param task is the task to be added
+     * @throws  IllegalArgumentException when the task parameter is null
      */
     @Override
     public void add(Task task) {
+        if( task == null ){
+            throw new IllegalArgumentException("The task cannot be null");
+        }
         Task[] tasksAdded = new Task[this.tasks.length + 1];
 
         System.arraycopy(this.tasks, 0, tasksAdded, 0, this.tasks.length);
@@ -43,10 +47,18 @@ public class ArrayTaskListImpl implements ArrayTaskList {
      * If the list contains the same task several times, any of them is removed.
      * @param task is the task to be deleted
      * @return a boolean value which indicates if the task is in the list.
+     * @throws  IllegalArgumentException when the task parameter is null
+     * or the array list is empty
      */
 
     @Override
     public boolean remove(Task task) {
+        if( task == null ){
+            throw new IllegalArgumentException("The task cannot be null");
+        } else if (this.tasks.length == 0) {
+            throw new IllegalArgumentException("The array list you are trying to access is empty");
+        }
+
         boolean isOnList = false;
         int aux = 0;
         int taskNumber = 0;
@@ -85,23 +97,40 @@ public class ArrayTaskListImpl implements ArrayTaskList {
      * position in the list.
      * @param index is the specified index of the required task to obtain
      * @return the task in the specified index
+     * @throws IllegalArgumentException when the array list is empty
+     * @throws IndexOutOfBoundsException when the index is negative or is out of range
      */
     @Override
-    public Task getTask(int index) {
-        return tasks[index];
+    public Task getTask(int index) throws IndexOutOfBoundsException{
+        if ( this.tasks.length == 0){
+            throw new IllegalArgumentException("The array list you are trying to access is empty");
+        } else {
+            try {
+                return tasks[index];
+            } catch (IndexOutOfBoundsException e){
+                throw new IndexOutOfBoundsException("The index is negative or out of range");
+            }
+        }
     }
 
     /**
      * It is a method that allows to obtain
      * the active tasks to be executed in a certain time range.
-     * The from time must be less than to.
      *
      * @param from is the start of the interval
      * @param to   is the end of the interval
      * @return the list of tasks
+     * @throws IllegalArgumentException when the from value is greater
+     * than to or the input is negative.
      */
     @Override
     public ArrayTaskList incoming(int from, int to) {
+        if(from > to ){
+            throw new IllegalArgumentException("The from value must be less than to");
+        } else if (from < 0){
+            throw new IllegalArgumentException("The input values cannot be negative");
+        }
+
         ArrayTaskList tasksOnRange = new ArrayTaskListImpl();
 
         for (Task i : this.tasks) {
@@ -111,8 +140,8 @@ public class ArrayTaskListImpl implements ArrayTaskList {
                     add += i.getRepeatInterval();
                 }
                 if (add < to && add < i.getEndTime()) {
-                    tasksOnRange.add(i);
-                }
+                     tasksOnRange.add(i);
+               }
 
             } else if (!i.isRepeated() && i.isActive() && i.getTime() >= from && i.getTime() <= to) {
                 tasksOnRange.add(i);

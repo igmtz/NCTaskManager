@@ -51,12 +51,13 @@ public class TaskImpl implements Task {
      * @param start start time
      * @param end end time
      * @param interval interval time
+     * @throws IllegalArgumentException when end value is less than start
+     * or the interval is less or equals zero.
      */
     public TaskImpl(String title, int start, int end, int interval){
         if( start > end ){
             throw new IllegalArgumentException("The start value must be less than end");
-        }
-        if (interval <= 0){
+        } else if (interval <= 0) {
             throw new IllegalArgumentException("The interval must be positive and more than zero");
         }
         this.title = title;
@@ -81,6 +82,7 @@ public class TaskImpl implements Task {
      * of variables in a non-repetitive task or to make the task
      * non-repetitive.
      * @param time is the new execution time
+     * @throws IllegalArgumentException when the time value is negative
      */
     @Override
     public void setTime(int time) {
@@ -99,9 +101,9 @@ public class TaskImpl implements Task {
     }
 
     /**
-     * getTime method checks on the execution time of a non-repetitive task
+     * getTime method checks on the execution time of a non-repetitive task.
+     * Repetitive tasks return the start value.
      * @return start time of the task
-     * @exception repetitive task returns the start time
      */
     @Override
     public int getTime() {
@@ -122,9 +124,9 @@ public class TaskImpl implements Task {
     }
 
     /**
-     * getStartTime method checks on the start time in repetitive tasks
+     * getStartTime method checks on the start time in repetitive tasks.
+     * Non-repetitive tasks returns time.
      * @return start time
-     * @exception Non repetitive task returns time
      */
     @Override
     public int getStartTime() {
@@ -137,8 +139,8 @@ public class TaskImpl implements Task {
 
     /**
      * getEndTime method checks on the end time in repetitive tasks.
+     * Non-repetitive task returns time.
      * @return end time
-     * @exception Non repetitive task returns time.
      */
     @Override
     public int getEndTime() {
@@ -150,9 +152,9 @@ public class TaskImpl implements Task {
     }
 
     /**
-     * getRepeatInterval method checks on the repetition time interval
+     * getRepeatInterval method checks on the repetition time interval.
+     * Non-repetitive tasks returns zero.
      * @return interval time
-     * @throws Non repetitive task returns 0.
      */
     @Override
     public int getRepeatInterval() {
@@ -166,6 +168,7 @@ public class TaskImpl implements Task {
     /**
      * isRepeated method checks on the repeatability of the
      * task.
+     * @return the repetitive condition
      */
     @Override
     public boolean isRepeated() {
@@ -180,14 +183,14 @@ public class TaskImpl implements Task {
      * @param start is the start time of the task
      * @param end is the end time of the task
      * @param interval is the time repetition interval
-     * @exception start must be less than end
+     * @throws IllegalArgumentException when the end time is less than
+     * start time and the interval is negative or equals to zero.
      */
     @Override
     public void setTime(int start, int end, int interval) {
         if( start > end ){
             throw new IllegalArgumentException("The start value must be less than end");
-        }
-        if (interval <= 0){
+        } else if (interval <= 0) {
             throw new IllegalArgumentException("The interval must be positive and more than zero");
         }
 
@@ -208,15 +211,19 @@ public class TaskImpl implements Task {
      * in order to return the upcoming time of the current task. If
      * the task is non-repetitive, it only checks the execution time.
      * If it is repetitive, it checks the execution time and the
-     * intervals defined in relation to the current time.
+     * intervals defined in relation to the current time. If the current
+     * time equals to execution time returns -1. Inactive tasks returns
+     * -1.
      *
      * @param current represents the actual time
      * @return upcoming time
-     * @exception Inactive tasks it returns (-1)
-     * @exception returns (-1) if current time equals to execution time
+     * @throws IllegalArgumentException when the current time is negative
      */
     @Override
     public int nextTimeAfter(int current) {
+        if (current < 0){
+            throw new IllegalArgumentException("The current time cannot be nagative");
+        }
         if(this.isActive && !this.isRepeated && current < this.time){
             return time;
         } else if (this.isActive && this.isRepeated) {
