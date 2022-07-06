@@ -7,11 +7,16 @@ public class Circle {
         this.radius = 1;
     }
 
-    public Circle(int radius) throws IllegalArgumentException{
-        if (radius <= 0){
-            throw new IllegalArgumentException("The radius must be positive and greater than zero");
+    public Circle(int radius) {
+
+        try {
+            if (radius <= 0){
+                throw new IllegalArgumentException("The radius must be positive and greater than zero");
+            }
+            this.radius = radius;
+        } catch (IllegalArgumentException e){
+            System.out.println("The radius must be positive and greater than zero");
         }
-        this.radius = radius;
     }
 
     public int getRadius() {
@@ -26,7 +31,6 @@ public class Circle {
     }
 
     public double getArea(Circle circle){
-        double area = Math.PI * Math.pow(circle.radius, 2);
-        return area;
+        return Math.PI * Math.pow(circle.radius, 2);
     }
 }
