@@ -9,7 +9,7 @@ package mx.tc.j2se.tasks;
  * @author Gonzalo Martínez
  */
 
-public class LinkedTaskListImpl implements LinkedTaskList {
+public class LinkedTaskListImpl extends AbstractTaskList {
     Node head;
 
     /**
@@ -93,9 +93,7 @@ public class LinkedTaskListImpl implements LinkedTaskList {
                     prev.next = current.next;
                 }
             }
-        } else if (count == 0){
-            return  false;
-        }
+        } else return count != 0;
         return true;
     }
 
@@ -147,44 +145,5 @@ public class LinkedTaskListImpl implements LinkedTaskList {
                 }
             return current.task;
         }
-    }
-
-    /**
-     * It is a method that allows to obtain
-     * the active tasks to be executed in a certain time range.
-     *
-     * @param from is the start of the interval
-     * @param to   is the end of the interval
-     * @return the list of tasks
-     * @throws IllegalArgumentException when the from value is greater
-     *                                  than to or the input is negative.
-     */
-    @Override
-    public LinkedTaskList incoming(int from, int to) {
-        if(from > to ){
-            throw new IllegalArgumentException("The from value must be less than to");
-        } else if (from < 0){
-            throw new IllegalArgumentException("The input values cannot be negative");
-        }
-
-        LinkedTaskList taskOnRange = new LinkedTaskListImpl();
-
-        Node current = head;
-
-        while (current != null){
-            if (current.task.isRepeated() && current.task.isActive()){
-                int add = current.task.getStartTime();
-                while (add < from){
-                    add += current.task.getRepeatInterval();
-                }
-                if (add < to && add < current.task.getEndTime()){
-                    taskOnRange.add(current.task);
-                }
-            } else if (!current.task.isRepeated() && current.task.isActive() && current.task.getTime() >= from && current.task.getTime() <= to) {
-                taskOnRange.add(current.task);
-            }
-            current = current.next;
-        }
-        return taskOnRange;
     }
 }

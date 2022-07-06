@@ -9,7 +9,7 @@ package mx.tc.j2se.tasks;
  * @author Gonzalo Martínez
  */
 
-public class ArrayTaskListImpl implements ArrayTaskList {
+public class ArrayTaskListImpl extends AbstractTaskList {
 
     /**
      * tasks is the initial variable used on the ArrayTaskListImpl class
@@ -111,43 +111,6 @@ public class ArrayTaskListImpl implements ArrayTaskList {
                 throw new IndexOutOfBoundsException("The index is negative or out of range");
             }
         }
-    }
-
-    /**
-     * It is a method that allows to obtain
-     * the active tasks to be executed in a certain time range.
-     *
-     * @param from is the start of the interval
-     * @param to   is the end of the interval
-     * @return the list of tasks
-     * @throws IllegalArgumentException when the from value is greater
-     * than to or the input is negative.
-     */
-    @Override
-    public ArrayTaskList incoming(int from, int to) {
-        if(from > to ){
-            throw new IllegalArgumentException("The from value must be less than to");
-        } else if (from < 0){
-            throw new IllegalArgumentException("The input values cannot be negative");
-        }
-
-        ArrayTaskList tasksOnRange = new ArrayTaskListImpl();
-
-        for (Task i : this.tasks) {
-            if (i.isRepeated() && i.isActive()) {
-                int add = i.getStartTime();
-                while (add < from) {
-                    add += i.getRepeatInterval();
-                }
-                if (add < to && add < i.getEndTime()) {
-                     tasksOnRange.add(i);
-               }
-
-            } else if (!i.isRepeated() && i.isActive() && i.getTime() >= from && i.getTime() <= to) {
-                tasksOnRange.add(i);
-            }
-        }
-        return tasksOnRange;
     }
 
 }
