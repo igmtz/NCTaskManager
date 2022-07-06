@@ -9,7 +9,7 @@ class ArrayTaskListImplTest {
     @Test
     void addTest() {
         TaskImpl task = new TaskImpl("Test1", 100);
-        ArrayTaskList tasks = new ArrayTaskListImpl();
+        ArrayTaskListImpl tasks = new ArrayTaskListImpl();
         tasks.add(task);
         assertEquals(1, tasks.size());
 
@@ -40,7 +40,7 @@ class ArrayTaskListImplTest {
         TaskImpl task4 = new TaskImpl("Test4", 100);
         TaskImpl task5= new TaskImpl("Test4", 100, 200, 50);
 
-        ArrayTaskList tasks = new ArrayTaskListImpl();
+        ArrayTaskListImpl tasks = new ArrayTaskListImpl();
         tasks.add(task);
         tasks.add(task);
         tasks.add(task2);
@@ -70,7 +70,7 @@ class ArrayTaskListImplTest {
         TaskImpl task4 = new TaskImpl("Test4", 100, 200, 50);
         TaskImpl task5 = new TaskImpl("Test5", 100);
 
-        ArrayTaskList taskList = new ArrayTaskListImpl();
+        ArrayTaskListImpl taskList = new ArrayTaskListImpl();
         taskList.add(task);
         taskList.add(task3);
         taskList.add(task4);
@@ -87,13 +87,13 @@ class ArrayTaskListImplTest {
         TaskImpl task4 = new TaskImpl("Test4", 100, 200, 50);
         TaskImpl task5 = new TaskImpl("Test5", 100);
 
-        ArrayTaskList taskList = new ArrayTaskListImpl();
+        ArrayTaskListImpl taskList = new ArrayTaskListImpl();
         taskList.add(task);
         taskList.add(task3);
         taskList.add(task4);
         taskList.add(task5);
 
-        assertEquals(task5, taskList.getTask(8));
+        assertEquals(task3, taskList.getTask(1));
     }
 
     @Test
@@ -112,7 +112,7 @@ class ArrayTaskListImplTest {
         TaskImpl task5 = new TaskImpl("Test5", 100);
 //        task5.setActive(true);
 
-        ArrayTaskList taskList = new ArrayTaskListImpl();
+        ArrayTaskListImpl taskList = new ArrayTaskListImpl();
         taskList.add(task);
         taskList.add(task2);
         taskList.add(task3);
