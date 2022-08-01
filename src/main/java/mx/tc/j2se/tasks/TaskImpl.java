@@ -1,5 +1,8 @@
 package mx.tc.j2se.tasks;
 
+import java.time.LocalDateTime;
+import java.util.Objects;
+
 /**
  * The TaskImpl class represents the template of the main objects
  * of the application which will be the task. Tasks contain text
@@ -13,11 +16,11 @@ package mx.tc.j2se.tasks;
 public class TaskImpl implements Task {
 
     private String title;
-    private int time;
+    private LocalDateTime time;
     private boolean isActive;
-    private int start;
-    private int end;
-    private int interval;
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private long interval;
     private boolean isRepeated;
 
     /**
@@ -32,9 +35,9 @@ public class TaskImpl implements Task {
      * @param title description of the task
      * @param time execution time
      */
-    public TaskImpl(String title, int time) {
-        if( time < 0 ){
-            throw new IllegalArgumentException("Time must be positive");
+    public TaskImpl(String title, LocalDateTime time) {
+        if( title == null || time == null ){
+            throw new IllegalArgumentException("Title or time is null");
         }
         this.title = title;
         this.time = time;
@@ -54,18 +57,21 @@ public class TaskImpl implements Task {
      * @throws IllegalArgumentException when end value is less than start
      * or the interval is less or equals zero.
      */
-    public TaskImpl(String title, int start, int end, int interval){
-        if( start > end ){
-            throw new IllegalArgumentException("The start value must be less than end");
+    public TaskImpl(String title, LocalDateTime start, LocalDateTime end, int interval){
+        if( title == null ){
+            throw new IllegalArgumentException("Title cannot be null");
         } else if (interval <= 0) {
             throw new IllegalArgumentException("The interval must be positive and more than zero");
+        } else if (start == null || end == null) {
+            throw new IllegalArgumentException("Start time or end time is less than zero");
+        } else{
+            this.title = title;
+            this.start = start;
+            this.end = end;
+            this.interval = interval;
+            this.isActive = false;
+            this.isRepeated = true;
         }
-        this.title = title;
-        this.start = start;
-        this.end = end;
-        this.interval = interval;
-        this.isActive = false;
-        this.isRepeated = true;
     }
 
     @Override
@@ -85,8 +91,8 @@ public class TaskImpl implements Task {
      * @throws IllegalArgumentException when the time value is negative
      */
     @Override
-    public void setTime(int time) {
-        if(time < 0 ){
+    public void setTime(LocalDateTime time) {
+        if(time == null ){
             throw new IllegalArgumentException("Time value cannot be negative");
         }
         if(!this.isRepeated){
@@ -94,8 +100,8 @@ public class TaskImpl implements Task {
         } else {
             this.isRepeated = false;
             this.time = time;
-            this.start = time;
-            this.end = time;
+            this.start = null;
+            this.end = null;
             this.interval = 0;
         }
     }
@@ -106,7 +112,7 @@ public class TaskImpl implements Task {
      * @return start time of the task
      */
     @Override
-    public int getTime() {
+    public LocalDateTime getTime() {
         if(!this.isRepeated) {
             return time;
         } else {
@@ -129,7 +135,7 @@ public class TaskImpl implements Task {
      * @return start time
      */
     @Override
-    public int getStartTime() {
+    public LocalDateTime getStartTime() {
         if(this.isRepeated){
             return start;
         } else {
@@ -143,7 +149,7 @@ public class TaskImpl implements Task {
      * @return end time
      */
     @Override
-    public int getEndTime() {
+    public LocalDateTime getEndTime() {
         if(this.isRepeated){
             return end;
         } else {
@@ -154,10 +160,11 @@ public class TaskImpl implements Task {
     /**
      * getRepeatInterval method checks on the repetition time interval.
      * Non-repetitive tasks returns zero.
+     *
      * @return interval time
      */
     @Override
-    public int getRepeatInterval() {
+    public long getRepeatInterval() {
         if(this.isRepeated){
             return interval;
         } else {
@@ -187,8 +194,8 @@ public class TaskImpl implements Task {
      * start time and the interval is negative or equals to zero.
      */
     @Override
-    public void setTime(int start, int end, int interval) {
-        if( start > end ){
+    public void setTime(LocalDateTime start, LocalDateTime end, long interval) {
+        if( start == null ){
             throw new IllegalArgumentException("The start value must be less than end");
         } else if (interval <= 0) {
             throw new IllegalArgumentException("The interval must be positive and more than zero");
@@ -199,10 +206,11 @@ public class TaskImpl implements Task {
         } else {
             this.isRepeated = true;
             this.start = start;
-            this.time = start;
+            this.time = null;
         }
         this.end = end;
         this.interval = interval;
+
 
     }
 
@@ -220,23 +228,65 @@ public class TaskImpl implements Task {
      * @throws IllegalArgumentException when the current time is negative
      */
     @Override
-    public int nextTimeAfter(int current) {
-        if (current < 0){
+    public LocalDateTime nextTimeAfter(LocalDateTime current) {
+        if (current == null){
             throw new IllegalArgumentException("The current time cannot be nagative");
         }
-        if(this.isActive && !this.isRepeated && current < this.time){
+        if(this.isActive && !this.isRepeated && current.isBefore(this.time)){
             return time;
         } else if (this.isActive && this.isRepeated) {
-            while(this.start <= current) {
-                start += this.interval;
+            LocalDateTime prevTime = this.start;
+            while(current.isAfter(prevTime)) {
+                prevTime = prevTime.plusMinutes(this.interval);
             }
-            if (this.start >= this.end) {
-                return -1;
+            if (prevTime.isAfter(this.end)) {
+                return LocalDateTime.MIN;
             } else {
-                return start;
+                return prevTime;
             }
         } else {
-            return -1;
+            return LocalDateTime.MIN;
         }
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TaskImpl)) return false;
+        Task task = (Task) o;
+        return getTime() == task.getTime()
+                && this.isActive == task.isActive()
+                && this.start == task.getStartTime()
+                && this.end == task.getEndTime()
+                && this.interval == task.getRepeatInterval()
+                && this.isRepeated == task.isRepeated()
+                && Objects.equals(this.title, task.getTitle())
+                && this.time == task.getTime();}
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.title, this.time, this.isActive, this.start, this.end, this.interval, this.isRepeated);
+    }
+
+    @Override
+    public String toString() {
+        if (isRepeated()) {
+            return this.title + " is a repetitive task with the next properties: " +
+                    "isActive=" + this.isActive +
+                    ", start=" + this.start +
+                    ", end=" + this.end +
+                    ", interval=" + this.interval;
+        } else {
+            return this.title + " is a non-repetitive task with the next properties: " +
+                    "isActive=" + this.isActive +
+                    ", time=" + this.time;
+        }
+    }
+
+    @Override
+    public Task clone() throws CloneNotSupportedException {
+        return (Task) super.clone();
+    }
+
 }

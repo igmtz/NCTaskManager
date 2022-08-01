@@ -1,4 +1,6 @@
 package mx.tc.j2se.tasks;
+import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -22,22 +24,19 @@ abstract class AbstractTaskList implements Iterable<Task>{
      * @throws IllegalArgumentException when the from value is greater
      * than to or the input is negative.
      */
-    public AbstractTaskList incoming(int from, int to) throws NoSuchMethodException {
-
-        AbstractTaskList tasksOnRange = new LinkedTaskListImpl();
+    public AbstractTaskList incoming(LocalDateTime from, LocalDateTime to) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
         if (this.size() == 0){
             throw new IllegalStateException();
         } else {
-            AbstractTaskList list = getClass().getDeclaredConstructor().newInstance();
+            AbstractTaskList tasksOnRange = getClass().getDeclaredConstructor().newInstance();
             this.getStream().filter(Objects::nonNull).filter(i -> {
                 if (i.nextTimeAfter(from)!=null)
                     return Objects.requireNonNull(i.nextTimeAfter(from)).isBefore(to) || Objects.requireNonNull(i.nextTimeAfter(from)).isEqual(to);
                 return false;
-            }).forEach(list::add);
-            return list;
+            }).forEach(tasksOnRange::add);
+            return tasksOnRange;
         }
-        return tasksOnRange;
     }
 
     /**
