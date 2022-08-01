@@ -1,6 +1,9 @@
 package mx.tc.j2se.tasks;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.stream.Stream;
 
-abstract class AbstractTaskList {
+abstract class AbstractTaskList implements Iterable<Task>{
 
     abstract void add(Task task);
     abstract boolean remove(Task task);
@@ -19,28 +22,41 @@ abstract class AbstractTaskList {
      * @throws IllegalArgumentException when the from value is greater
      * than to or the input is negative.
      */
-    public AbstractTaskList incoming(int from, int to) {
-        if(from > to ){
-            throw new IllegalArgumentException("The from value must be less than to");
-        } else if (from < 0) {
-            throw new IllegalArgumentException("The input values cannot be negative");
-        }
+    public AbstractTaskList incoming(int from, int to) throws NoSuchMethodException {
 
         AbstractTaskList tasksOnRange = new LinkedTaskListImpl();
 
-        for(int i = 0; i < size(); i++){
-            if(getTask(i).isRepeated() && getTask(i).isActive()){
-                int add = getTask(i).getStartTime();
-                while (add < from) {
-                    add += getTask(i).getRepeatInterval();
-                }
-                if (add < to && add < getTask(i).getEndTime()) {
-                    tasksOnRange.add(getTask(i));
-                }
-            } else if(!getTask(i).isRepeated() && getTask(i).isActive() && getTask(i).getTime() >= from && getTask(i).getTime() <= to){
-                tasksOnRange.add(getTask(i));
-            }
+        if (this.size() == 0){
+            throw new IllegalStateException();
+        } else {
+            AbstractTaskList list = getClass().getDeclaredConstructor().newInstance();
+            this.getStream().filter(Objects::nonNull).filter(i -> {
+                if (i.nextTimeAfter(from)!=null)
+                    return Objects.requireNonNull(i.nextTimeAfter(from)).isBefore(to) || Objects.requireNonNull(i.nextTimeAfter(from)).isEqual(to);
+                return false;
+            }).forEach(list::add);
+            return list;
         }
-            return tasksOnRange;
+        return tasksOnRange;
     }
+
+    /**
+     * Compares two objects and defines is they are equal
+     * @param o is the object of comparison
+     * @return boolean value
+     */
+    public abstract boolean equals (Object o);
+
+    /**
+     * Generates a unique value that represents the Object
+     * @return a generated unique value
+     */
+    public abstract int hashCode();
+
+    /**
+     * Creates a stream that allows to iterate
+     * collections
+     * @return a stream object
+     */
+    public abstract Stream<Task> getStream();
 }
